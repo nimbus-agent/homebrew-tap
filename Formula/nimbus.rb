@@ -6,24 +6,24 @@
 class Nimbus < Formula
   desc "Local-first AI agent framework (headless gateway + CLI)"
   homepage "https://github.com/nimbus-agent/Nimbus"
-  version "7.22.0"
+  version "7.23.0"
   license "AGPL-3.0-only"
 
   on_macos do
     on_arm do
-      url "https://github.com/nimbus-agent/Nimbus/releases/download/v7.22.0/nimbus-headless-macos-arm64.tar.gz"
-      sha256 "3a01e087933329654edede04203fb4dbb0789c81f30ece92d1e7a358465999d2"
+      url "https://github.com/nimbus-agent/Nimbus/releases/download/v7.23.0/nimbus-headless-macos-arm64.tar.gz"
+      sha256 "054fd3fecf3c5d7fc4ed5d4525d8e4d632c589ccdb7d2d7f0413df88a15114f9"
     end
     on_intel do
-      url "https://github.com/nimbus-agent/Nimbus/releases/download/v7.22.0/nimbus-headless-macos-x64.tar.gz"
-      sha256 "090376dfebc6792aa0b866ef43f5e0f15f3fa6597997576be749e709154eff61"
+      url "https://github.com/nimbus-agent/Nimbus/releases/download/v7.23.0/nimbus-headless-macos-x64.tar.gz"
+      sha256 "995bdd35669506b6c56e0c1df1ebf23894c0f95e01091080731a02b705163e00"
     end
   end
 
   on_linux do
     on_intel do
-      url "https://github.com/nimbus-agent/Nimbus/releases/download/v7.22.0/nimbus-headless-linux-amd64-v7.22.0.tar.gz"
-      sha256 "4ac56bfe83115b88169cda4f2cd17c490b28de0f6cb4c046fe99e224fc4b2e99"
+      url "https://github.com/nimbus-agent/Nimbus/releases/download/v7.23.0/nimbus-headless-linux-amd64-v7.23.0.tar.gz"
+      sha256 "eb72c4864bdbf28882d3be219cbaec32e32017c378e0edc1fff1f08db072c6b3"
     end
   end
 
@@ -33,6 +33,6 @@ class Nimbus < Formula
   end
 
   test do
-    assert_match "7.22.0", shell_output("#{bin}/nimbus --version")
+    assert_match "7.23.0", shell_output("#{bin}/nimbus --version")
   end
 end
