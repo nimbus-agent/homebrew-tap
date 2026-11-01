@@ -6,33 +6,60 @@
 class Nimbus < Formula
   desc "Local-first AI agent framework (headless gateway + CLI)"
   homepage "https://github.com/nimbus-agent/Nimbus"
-  version "10.13.0"
+  version "10.14.0"
   license "AGPL-3.0-only"
 
   on_macos do
     on_arm do
-      url "https://github.com/nimbus-agent/Nimbus/releases/download/v10.13.0/nimbus-headless-macos-arm64.tar.gz"
-      sha256 "f605ed8e4438e7046c5aa3676c07dd3e68ae0ce246e1c161ea17513462b0184d"
+      url "https://github.com/nimbus-agent/Nimbus/releases/download/v10.14.0/nimbus-headless-macos-arm64.tar.gz"
+      sha256 "d5b4b6a7e61464dbb366912e568b23eed1eeca9e35929d367a28ad4740b9143d"
     end
     on_intel do
-      url "https://github.com/nimbus-agent/Nimbus/releases/download/v10.13.0/nimbus-headless-macos-x64.tar.gz"
-      sha256 "a8481fd6558b990ca52dc9bc82092bfe4dca4f6a4cf1a89ca714cab924e60b7c"
+      url "https://github.com/nimbus-agent/Nimbus/releases/download/v10.14.0/nimbus-headless-macos-x64.tar.gz"
+      sha256 "3513fef7b4c5e8514fa2af71569ab24cecd89a4116f326d8e5871e51626b8779"
     end
   end
 
   on_linux do
     on_intel do
-      url "https://github.com/nimbus-agent/Nimbus/releases/download/v10.13.0/nimbus-headless-linux-amd64-v10.13.0.tar.gz"
-      sha256 "2d4703aad16d7c2a12fa7591a9508893581f13d1957e68f15b464358c63a8baa"
+      url "https://github.com/nimbus-agent/Nimbus/releases/download/v10.14.0/nimbus-headless-linux-amd64-v10.14.0.tar.gz"
+      sha256 "0428bc6c9729343552fa39249f9e766d879ad33bba8df16e57139bc214f6b875"
     end
   end
 
+  # The two layouts differ on purpose: the macOS archives are flat, the Linux tarball nests its
+  # binaries under bin/. The gateway looks for the sandbox helper and vec0.so beside itself, so on
+  # Linux they go in the same directory. Without the helper a connector that declares a network
+  # reaches the whole internet.
   def install
-    bin.install "nimbus"
-    bin.install "nimbus-gateway"
+    if OS.linux?
+      bin.install "bin/nimbus", "bin/nimbus-gateway", "bin/nimbus-sandbox-helper"
+      bin.install "bin/vec0.so" if File.exist?("bin/vec0.so")
+    else
+      bin.install "nimbus"
+      bin.install "nimbus-gateway"
+    end
+  end
+
+  # Not depends_on "bubblewrap": the gateway looks for bwrap at fixed paths outside Homebrew's prefix,
+  # because a bwrap found on PATH could be anything and bwrap is the confinement.
+  def caveats
+    return unless OS.linux?
+
+    <<~EOS
+      Nimbus needs bubblewrap from your distribution, at /usr/bin/bwrap. Homebrew's own bwrap is not
+      looked for. Without it no connector or extension can start.
+        Debian/Ubuntu: sudo apt install bubblewrap
+        Fedora/RHEL:   sudo dnf install bubblewrap
+        Arch:          sudo pacman -S bubblewrap
+      Then run: nimbus doctor
+
+      After brew upgrade, restart the gateway (nimbus stop, then nimbus start): one left running keeps
+      the old version and starts its connectors from a directory the upgrade replaced.
+    EOS
   end
 
   test do
-    assert_match "10.13.0", shell_output("#{bin}/nimbus --version")
+    assert_match "10.14.0", shell_output("#{bin}/nimbus --version")
   end
 end
